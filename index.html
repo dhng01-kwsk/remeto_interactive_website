@@ -1,14 +1,4 @@
-<div class="form-group">
-<label>Background Art</label>
-<div class="img-row" id="imgRow"></div>
-<details style="margin-top:8px">
-<summary style="font-size:8px;color:rgba(80,140,255,0.3);cursor:pointer;letter-spacing:2px">CUSTOM URL ▾</summary>
-<div style="margin-top:6px;display:flex;gap:6px">
-<input type="text" id="customImgUrl" placeholder="https://...image.png" style="flex:1;background:rgba(80,140,255,0.04);border:1px solid rgba(80,140,255,0.12);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;outline:none">
-<button id="customImgBtn" style="background:rgba(80,140,255,0.1);border:1px solid rgba(80,140,255,0.2);border-radius:6px;color:rgba(80,180,255,0.7);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer">OK</button>
-</div>
-</details>
-</div><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -20,7 +10,6 @@
 body{background:#050508;overflow-x:hidden;min-height:100vh;font-family:'Share Tech Mono',monospace;color:#fff;display:flex;flex-direction:column;align-items:center}
 canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
 
-/* === BOOT === */
 .boot{position:fixed;inset:0;z-index:200;background:#050508;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s}
 .boot.done{opacity:0;pointer-events:none}
 .boot-logo{font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:rgba(80,140,255,0);letter-spacing:10px;margin-bottom:24px;transition:all 1s}
@@ -33,17 +22,13 @@ canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
 .boot-status{color:rgba(80,140,255,0.3);font-size:9px;letter-spacing:4px;margin-top:10px;opacity:0;transition:opacity 0.5s}
 .boot-status.on{opacity:1}
 
-/* === MAIN === */
 .main{position:relative;z-index:1;width:100%;max-width:900px;padding:30px 20px 60px;opacity:0;transform:translateY(20px);transition:all 1s}
 .main.show{opacity:1;transform:translateY(0)}
-
 .page-title{text-align:center;margin-bottom:30px}
 .page-title h1{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:6px;color:rgba(80,140,255,0.8);text-shadow:0 0 20px rgba(80,140,255,0.3)}
 .page-title p{font-size:10px;color:rgba(80,140,255,0.35);letter-spacing:4px;margin-top:6px}
-
 .layout{display:flex;gap:30px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
 
-/* === FORM === */
 .form-panel{width:280px;display:flex;flex-direction:column;gap:14px}
 .form-group label{display:block;font-size:9px;color:rgba(80,140,255,0.5);letter-spacing:3px;margin-bottom:6px;text-transform:uppercase}
 .form-group input,.form-group select{width:100%;background:rgba(80,140,255,0.04);border:1px solid rgba(80,140,255,0.15);border-radius:8px;padding:10px 12px;color:rgba(255,255,255,0.85);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:border-color 0.3s}
@@ -58,6 +43,7 @@ canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
 .img-opt.active{border-color:rgba(80,180,255,0.8);box-shadow:0 0 12px rgba(80,140,255,0.2)}
 .img-opt img{width:100%;height:100%;object-fit:cover;object-position:center top}
 .img-opt .img-label{position:absolute;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.7);font-size:6px;text-align:center;padding:2px 0;color:rgba(80,140,255,0.6);letter-spacing:1px}
+
 .color-row{display:flex;gap:8px}
 .color-opt{width:32px;height:32px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all 0.3s;position:relative}
 .color-opt.active{border-color:rgba(255,255,255,0.8);transform:scale(1.1)}
@@ -68,7 +54,6 @@ canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
 .btn-download{background:rgba(140,80,255,0.1);border-color:rgba(140,80,255,0.3);color:rgba(180,140,255,0.8)}
 .btn-download:hover{background:rgba(140,80,255,0.2);border-color:rgba(140,80,255,0.6)}
 
-/* === CARD PREVIEW === */
 .card-area{position:relative;perspective:1200px}
 .card-outer{width:360px;height:520px;transform-style:preserve-3d;transition:transform 0.08s ease-out}
 .card{position:relative;width:100%;height:100%;border-radius:16px;overflow:hidden;background:#080810;box-shadow:0 0 60px rgba(80,100,255,0.08),0 0 120px rgba(100,40,200,0.04)}
@@ -76,40 +61,23 @@ canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
 @keyframes spin{to{--angle:360deg}}
 @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
 
-/* Card background image */
 .card-bg{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:16px}
 .card-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform 0.1s ease-out}
 .card-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,15,0.1) 0%,rgba(5,5,15,0.15) 50%,rgba(5,5,15,0.9) 75%,rgba(5,5,15,0.98) 100%);z-index:1}
 
-/* Card content */
 .card-content{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;padding:20px}
-
-/* Accent bar */
-.accent-bar{position:absolute;top:0;left:0;width:100%;height:3px;z-index:6;background:var(--accent,linear-gradient(90deg,#508cff,#a050ff))}
-
-/* User info */
-.card-user{margin-bottom:8px}
-.card-username{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;letter-spacing:4px;color:#fff;text-shadow:0 0 15px var(--accent-glow,rgba(80,140,255,0.5))}
-.card-handle{font-size:10px;color:var(--accent-text,rgba(80,140,255,0.6));letter-spacing:2px;margin-top:3px}
-
-/* Stats row -->  */
+.accent-bar{position:absolute;top:0;left:0;width:100%;height:3px;z-index:6}
+.card-username{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;letter-spacing:4px;color:#fff}
+.card-handle{font-size:10px;letter-spacing:2px;margin-top:3px}
 .card-stats{display:flex;gap:16px;margin-top:10px}
-.card-stat{display:flex;flex-direction:column;gap:2px}
 .card-stat-label{font-size:7px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase}
-.card-stat-value{font-size:11px;color:var(--accent-text,rgba(80,140,255,0.7));letter-spacing:1px}
-
-/* Card role badge -->  */
-.card-role{display:inline-block;padding:4px 12px;border-radius:4px;font-size:8px;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--accent-border,rgba(80,140,255,0.3));color:var(--accent-text,rgba(80,140,255,0.7));background:var(--accent-bg,rgba(80,140,255,0.06));margin-top:10px;align-self:flex-start}
-
-/* Card ID -->  */
+.card-stat-value{font-size:11px;letter-spacing:1px;margin-top:2px}
+.card-role{display:inline-block;padding:4px 12px;border-radius:4px;font-size:8px;letter-spacing:3px;text-transform:uppercase;margin-top:10px;align-self:flex-start}
 .card-id{position:absolute;top:14px;right:16px;font-size:7px;color:rgba(255,255,255,0.2);letter-spacing:2px;z-index:6;text-align:right}
-
-/* Brand -->  */
 .card-brand{position:absolute;top:14px;left:16px;z-index:6}
 .card-brand-text{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:4px;color:rgba(255,255,255,0.6)}
 .card-brand-sub{font-size:7px;color:rgba(80,140,255,0.3);letter-spacing:3px;margin-top:2px}
 
-/* Overlays -->  */
 .card .scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);z-index:8;pointer-events:none}
 .card .vignette{position:absolute;inset:0;box-shadow:inset 0 0 60px rgba(0,0,0,0.5);z-index:8;pointer-events:none}
 .card .scan-anim{position:absolute;width:100%;height:3px;background:linear-gradient(90deg,transparent,rgba(80,200,255,0.06),transparent);z-index:9;pointer-events:none;animation:scanD 8s linear infinite}
@@ -118,28 +86,25 @@ canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
 .card .shine::before{content:'';position:absolute;width:150%;height:150%;top:-25%;left:-25%;background:radial-gradient(ellipse at var(--sx,50%) var(--sy,50%),rgba(255,255,255,0.07) 0%,transparent 55%)}
 canvas.mouseP{position:absolute;inset:0;z-index:9;pointer-events:none}
 
-/* Corners -->  */
 .cc{position:absolute;width:18px;height:18px;z-index:7;pointer-events:none}
-.cc::before,.cc::after{content:'';position:absolute;background:var(--accent-border,rgba(80,140,255,0.2))}
+.cc::before,.cc::after{content:'';position:absolute}
 .cc-tl{top:10px;left:10px}.cc-tl::before{width:18px;height:1px}.cc-tl::after{width:1px;height:18px}
 .cc-tr{top:10px;right:10px}.cc-tr::before{width:18px;height:1px;right:0}.cc-tr::after{width:1px;height:18px;right:0}
 .cc-bl{bottom:10px;left:10px}.cc-bl::before{width:18px;height:1px;bottom:0}.cc-bl::after{width:1px;height:18px;bottom:0}
 .cc-br{bottom:10px;right:10px}.cc-br::before{width:18px;height:1px;bottom:0;right:0}.cc-br::after{width:1px;height:18px;bottom:0;right:0}
 
-/* Float particles inside card -->  */
 .fp-wrap{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden}
 .fp{position:absolute;border-radius:50%;animation:fpA var(--d) ease-in-out infinite;left:var(--x);bottom:-5px;width:var(--s);height:var(--s)}
 @keyframes fpA{0%,100%{transform:translateY(0);opacity:0}15%{opacity:0.6}85%{opacity:0.4}99%{transform:translateY(-500px);opacity:0}}
-
-.credit{text-align:center;font-size:8px;color:rgba(80,140,255,0.2);letter-spacing:4px;padding:20px 0 30px;position:relative;z-index:1}
-.credit a{color:rgba(80,180,255,0.35);text-decoration:none;border-bottom:1px solid rgba(80,180,255,0.12);transition:color 0.3s}
-.credit a:hover{color:rgba(80,180,255,0.7)}
 
 .tilt-msg{display:none;text-align:center;color:rgba(80,140,255,0.35);font-size:9px;letter-spacing:3px;margin-top:12px;animation:tp 2s ease-in-out infinite}
 @media(pointer:coarse){.tilt-msg{display:block}}
 @keyframes tp{0%,100%{opacity:.3}50%{opacity:.7}}
 
-/* Hidden canvas for export -->  */
+.credit{text-align:center;font-size:8px;color:rgba(80,140,255,0.2);letter-spacing:4px;padding:20px 0 30px;position:relative;z-index:1}
+.credit a{color:rgba(80,180,255,0.35);text-decoration:none;border-bottom:1px solid rgba(80,180,255,0.12);transition:color 0.3s}
+.credit a:hover{color:rgba(80,180,255,0.7)}
+
 #exportCanvas{display:none}
 
 @media(max-width:700px){
@@ -154,140 +119,121 @@ canvas.mouseP{position:absolute;inset:0;z-index:9;pointer-events:none}
 
 <canvas id="bg"></canvas>
 
-<!-- BOOT -->
 <div class="boot" id="boot">
-<div class="boot-logo" id="bootLogo">REMEKO</div>
-<div class="boot-text" id="bootText"></div>
-<div class="boot-bar"><div class="boot-fill" id="bootFill"></div></div>
-<div class="boot-status" id="bootStatus">PRESS ANYWHERE TO ENTER</div>
+  <div class="boot-logo" id="bootLogo">REMEKO</div>
+  <div class="boot-text" id="bootText"></div>
+  <div class="boot-bar"><div class="boot-fill" id="bootFill"></div></div>
+  <div class="boot-status" id="bootStatus">PRESS ANYWHERE TO ENTER</div>
 </div>
 
-<!-- MAIN -->
 <div class="main" id="main">
+  <div class="page-title">
+    <h1>COMMUNITY CARD GENERATOR</h1>
+    <p>CREATE YOUR IDENTITY // SHARE ON X</p>
+  </div>
 
-<div class="page-title">
-<h1>COMMUNITY CARD GENERATOR</h1>
-<p>CREATE YOUR IDENTITY // SHARE ON X</p>
-</div>
+  <div class="layout">
+    <!-- FORM -->
+    <div class="form-panel">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="inName" placeholder="Your name" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label>X Handle</label>
+        <input type="text" id="inHandle" placeholder="@yourhandle" maxlength="30">
+      </div>
+      <div class="form-group">
+        <label>Wallet (first 6 chars)</label>
+        <input type="text" id="inWallet" placeholder="0x3F2a..." maxlength="10">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="inRole">
+          <option value="COMMUNITY">COMMUNITY</option>
+          <option value="OG">OG</option>
+          <option value="HOLDER">HOLDER</option>
+          <option value="BUILDER">BUILDER</option>
+          <option value="ARTIST">ARTIST</option>
+          <option value="DEGEN">DEGEN</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Card # (1-9999)</label>
+        <input type="number" id="inNumber" placeholder="0001" min="1" max="9999">
+      </div>
+      <div class="form-group">
+        <label>Background Art</label>
+        <div class="img-row" id="imgRow"></div>
+        <details style="margin-top:8px">
+          <summary style="font-size:8px;color:rgba(80,140,255,0.3);cursor:pointer;letter-spacing:2px">CUSTOM URL ▾</summary>
+          <div style="margin-top:6px;display:flex;gap:6px">
+            <input type="text" id="customImgUrl" placeholder="https://...image.png" style="flex:1;background:rgba(80,140,255,0.04);border:1px solid rgba(80,140,255,0.12);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;outline:none">
+            <button id="customImgBtn" style="background:rgba(80,140,255,0.1);border:1px solid rgba(80,140,255,0.2);border-radius:6px;color:rgba(80,180,255,0.7);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer">OK</button>
+          </div>
+        </details>
+      </div>
+      <div class="form-group">
+        <label>Accent Color</label>
+        <div class="color-row" id="colorRow">
+          <div class="color-opt active" data-color="blue" style="background:linear-gradient(135deg,#508cff,#3060cc)"></div>
+          <div class="color-opt" data-color="purple" style="background:linear-gradient(135deg,#a050ff,#7030cc)"></div>
+          <div class="color-opt" data-color="cyan" style="background:linear-gradient(135deg,#40d8ff,#20a0cc)"></div>
+          <div class="color-opt" data-color="red" style="background:linear-gradient(135deg,#ff4060,#cc2040)"></div>
+          <div class="color-opt" data-color="green" style="background:linear-gradient(135deg,#40ff80,#20cc60)"></div>
+          <div class="color-opt" data-color="gold" style="background:linear-gradient(135deg,#ffc040,#cc9020)"></div>
+        </div>
+      </div>
+      <button class="btn btn-download" id="btnDownload">↓ DOWNLOAD CARD</button>
+    </div>
 
-<div class="layout">
-
-<!-- FORM -->
-<div class="form-panel">
-
-<div class="form-group">
-<label>Username</label>
-<input type="text" id="inName" placeholder="Your name" maxlength="20" value="">
-</div>
-
-<div class="form-group">
-<label>X Handle</label>
-<input type="text" id="inHandle" placeholder="@yourhandle" maxlength="30" value="">
-</div>
-
-<div class="form-group">
-<label>Wallet (first 6 chars)</label>
-<input type="text" id="inWallet" placeholder="0x3F2a..." maxlength="10" value="">
-</div>
-
-<div class="form-group">
-<label>Role</label>
-<select id="inRole">
-<option value="COMMUNITY">COMMUNITY</option>
-<option value="OG">OG</option>
-<option value="HOLDER">HOLDER</option>
-<option value="BUILDER">BUILDER</option>
-<option value="ARTIST">ARTIST</option>
-<option value="DEGEN">DEGEN</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Card # (1-9999)</label>
-<input type="number" id="inNumber" placeholder="0001" min="1" max="9999" value="">
-</div>
-
-<div class="form-group">
-<label>Background Art</label>
-<div class="img-row" id="imgRow"></div>
-<div style="margin-top:8px;display:flex;gap:6px">
-<input type="text" id="customImgUrl" placeholder="Or paste image URL" style="flex:1;background:rgba(80,140,255,0.04);border:1px solid rgba(80,140,255,0.12);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;outline:none">
-<button id="customImgBtn" style="background:rgba(80,140,255,0.1);border:1px solid rgba(80,140,255,0.2);border-radius:6px;color:rgba(80,180,255,0.7);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer">OK</button>
-</div>
-</div>
-
-<div class="form-group">
-<label>Accent Color</label>
-<div class="color-row" id="colorRow">
-<div class="color-opt active" data-color="blue" style="background:linear-gradient(135deg,#508cff,#3060cc)"></div>
-<div class="color-opt" data-color="purple" style="background:linear-gradient(135deg,#a050ff,#7030cc)"></div>
-<div class="color-opt" data-color="cyan" style="background:linear-gradient(135deg,#40d8ff,#20a0cc)"></div>
-<div class="color-opt" data-color="red" style="background:linear-gradient(135deg,#ff4060,#cc2040)"></div>
-<div class="color-opt" data-color="green" style="background:linear-gradient(135deg,#40ff80,#20cc60)"></div>
-<div class="color-opt" data-color="gold" style="background:linear-gradient(135deg,#ffc040,#cc9020)"></div>
-</div>
-</div>
-
-<button class="btn btn-download" id="btnDownload">↓ DOWNLOAD CARD</button>
-
-</div>
-
-<!-- CARD PREVIEW -->
-<div class="card-area">
-<div class="card-outer" id="card3d">
-<div class="card" id="card">
-
-<div class="accent-bar" id="accentBar"></div>
-
-<div class="card-bg">
-<img id="cardBgImg" src="" alt="">
-<div class="card-bg-overlay"></div>
-</div>
-
-<div class="card-brand">
-<div class="card-brand-text">REMEKO</div>
-<div class="card-brand-sub">COMMUNITY PASS</div>
-</div>
-<div class="card-id" id="cardId">#0001<br>GEN::01</div>
-
-<div class="cc cc-tl"></div><div class="cc cc-tr"></div>
-<div class="cc cc-bl"></div><div class="cc cc-br"></div>
-
-<div class="fp-wrap" id="fpWrap"></div>
-
-<div class="card-content">
-<div class="card-user">
-<div class="card-username" id="cardName">YOUR NAME</div>
-<div class="card-handle" id="cardHandle">@handle</div>
-</div>
-<div class="card-stats">
-<div class="card-stat"><div class="card-stat-label">Wallet</div><div class="card-stat-value" id="cardWallet">0x...</div></div>
-<div class="card-stat"><div class="card-stat-label">Status</div><div class="card-stat-value" id="cardStatus">ACTIVE</div></div>
-<div class="card-stat"><div class="card-stat-label">Network</div><div class="card-stat-value">ETH</div></div>
-</div>
-<div class="card-role" id="cardRole">COMMUNITY</div>
-</div>
-
-<div class="scanlines"></div>
-<div class="vignette"></div>
-<div class="scan-anim"></div>
-<div class="shine" id="shine"></div>
-<canvas class="mouseP" id="mouseP"></canvas>
-
-</div>
-</div>
-<div class="tilt-msg">📱 TILT YOUR PHONE TO INTERACT</div>
-</div>
-
-</div>
+    <!-- CARD PREVIEW -->
+    <div class="card-area">
+      <div class="card-outer" id="card3d">
+        <div class="card" id="card">
+          <div class="accent-bar" id="accentBar"></div>
+          <div class="card-bg">
+            <img id="cardBgImg" src="" alt="">
+            <div class="card-bg-overlay"></div>
+          </div>
+          <div class="card-brand">
+            <div class="card-brand-text">REMEKO</div>
+            <div class="card-brand-sub">COMMUNITY PASS</div>
+          </div>
+          <div class="card-id" id="cardId">#0001<br>GEN::01</div>
+          <div class="cc cc-tl"></div><div class="cc cc-tr"></div>
+          <div class="cc cc-bl"></div><div class="cc cc-br"></div>
+          <div class="fp-wrap" id="fpWrap"></div>
+          <div class="card-content">
+            <div class="card-username" id="cardName">YOUR NAME</div>
+            <div class="card-handle" id="cardHandle">@handle</div>
+            <div class="card-stats">
+              <div class="card-stat"><div class="card-stat-label">Wallet</div><div class="card-stat-value" id="cardWallet">0x...</div></div>
+              <div class="card-stat"><div class="card-stat-label">Status</div><div class="card-stat-value">ACTIVE</div></div>
+              <div class="card-stat"><div class="card-stat-label">Network</div><div class="card-stat-value">ETH</div></div>
+            </div>
+            <div class="card-role" id="cardRole">COMMUNITY</div>
+          </div>
+          <div class="scanlines"></div>
+          <div class="vignette"></div>
+          <div class="scan-anim"></div>
+          <div class="shine" id="shine"></div>
+          <canvas class="mouseP" id="mouseP"></canvas>
+        </div>
+      </div>
+      <div class="tilt-msg">📱 TILT YOUR PHONE TO INTERACT</div>
+    </div>
+  </div>
 </div>
 
 <div class="credit">BUILT WITH CODE BY <a href="https://x.com/dnh1_kwsk" target="_blank">@dnh1_kwsk</a> // FOR THE REMEKO COMMUNITY</div>
-
 <canvas id="exportCanvas"></canvas>
 
 <script>
-// ========== COLOR THEMES ==========
+// ========== GLOBALS ==========
+const bgImg = document.getElementById('cardBgImg');
+
+// ========== THEMES ==========
 const themes={
   blue:{accent:'linear-gradient(90deg,#508cff,#a050ff)',glow:'rgba(80,140,255,0.5)',text:'rgba(80,160,255,0.7)',border:'rgba(80,140,255,0.25)',bg:'rgba(80,140,255,0.06)',particle:'80,160,255'},
   purple:{accent:'linear-gradient(90deg,#a050ff,#ff50a0)',glow:'rgba(160,80,255,0.5)',text:'rgba(180,120,255,0.7)',border:'rgba(160,80,255,0.25)',bg:'rgba(160,80,255,0.06)',particle:'160,100,255'},
@@ -305,6 +251,14 @@ function applyTheme(t){
   card.style.setProperty('--accent-border',th.border);
   card.style.setProperty('--accent-bg',th.bg);
   document.getElementById('accentBar').style.background=th.accent;
+  document.getElementById('cardName').style.textShadow=`0 0 15px ${th.glow}`;
+  document.getElementById('cardHandle').style.color=th.text;
+  document.getElementById('cardWallet').style.color=th.text;
+  document.getElementById('cardRole').style.color=th.text;
+  document.getElementById('cardRole').style.borderColor=th.border;
+  document.getElementById('cardRole').style.background=th.bg;
+  document.querySelectorAll('.cc::before,.cc::after').forEach(e=>e.style.background=th.border);
+  document.querySelectorAll('.cc').forEach(el=>{el.style.setProperty('--cb',th.border)});
   document.querySelectorAll('.fp').forEach(p=>p.style.background=`rgba(${th.particle},0.4)`);
 }
 
@@ -318,9 +272,26 @@ function playDownload(){if(!audioCtx)return;[0,0.06,0.12].forEach((t,i)=>{const 
 
 // ========== BOOT ==========
 const bootLines=['> INITIALIZING REMEKO_CORE','  LOADING COMMUNITY MODULE.....OK','  SYNC CARD ENGINE.............OK','  RENDER PIPELINE..............OK','  PARTICLE SYSTEM..............OK','','  ◉ GENERATOR ONLINE'];
-const bootText=document.getElementById('bootText'),bootFill=document.getElementById('bootFill'),bootEl=document.getElementById('boot'),mainEl=document.getElementById('main'),bootLogo=document.getElementById('bootLogo'),bootStatus=document.getElementById('bootStatus');
 let bi=0,bootDone=false;
-function bootNext(){if(bi>=bootLines.length){bootFill.style.width='100%';bootStatus.classList.add('on');const fin=()=>{if(bootDone)return;bootDone=true;initAudio();playBoot();bootEl.classList.add('done');setTimeout(()=>mainEl.classList.add('show'),300);document.removeEventListener('click',fin);document.removeEventListener('touchstart',fin)};document.addEventListener('click',fin);document.addEventListener('touchstart',fin);return}const d=document.createElement('div');d.innerHTML=bootLines[bi]+(bootLines[bi].includes('OK')?'':bootLines[bi].includes('ONLINE')?'':'');if(bootLines[bi].includes('OK'))d.innerHTML=bootLines[bi].replace('OK','<span style="color:rgba(80,255,140,0.5)">OK</span>');if(bootLines[bi].includes('ONLINE'))d.innerHTML='  <span style="color:rgba(80,255,140,0.6)">◉ GENERATOR ONLINE</span>';bootText.appendChild(d);requestAnimationFrame(()=>d.classList.add('on'));bootFill.style.width=((bi+1)/bootLines.length*95)+'%';if(bi===0)setTimeout(()=>bootLogo.classList.add('on'),100);bi++;setTimeout(bootNext,180+Math.random()*120)}
+function bootNext(){
+  const bootText=document.getElementById('bootText'),bootFill=document.getElementById('bootFill');
+  if(bi>=bootLines.length){
+    bootFill.style.width='100%';
+    document.getElementById('bootStatus').classList.add('on');
+    const fin=()=>{if(bootDone)return;bootDone=true;initAudio();playBoot();document.getElementById('boot').classList.add('done');setTimeout(()=>document.getElementById('main').classList.add('show'),300)};
+    document.addEventListener('click',fin);document.addEventListener('touchstart',fin);return;
+  }
+  const d=document.createElement('div');
+  let html=bootLines[bi];
+  if(html.includes('OK'))html=html.replace('OK','<span style="color:rgba(80,255,140,0.5)">OK</span>');
+  if(html.includes('ONLINE'))html='  <span style="color:rgba(80,255,140,0.6)">◉ GENERATOR ONLINE</span>';
+  d.innerHTML=html;
+  bootText.appendChild(d);
+  requestAnimationFrame(()=>d.classList.add('on'));
+  bootFill.style.width=((bi+1)/bootLines.length*95)+'%';
+  if(bi===0)setTimeout(()=>document.getElementById('bootLogo').classList.add('on'),100);
+  bi++;setTimeout(bootNext,180+Math.random()*120);
+}
 setTimeout(bootNext,500);
 
 // ========== BG PARTICLES ==========
@@ -331,9 +302,9 @@ function db(){cx.fillStyle='rgba(5,5,8,0.12)';cx.fillRect(0,0,W,H);pts.forEach(p
 
 // ========== CARD FLOAT PARTICLES ==========
 const fpWrap=document.getElementById('fpWrap');
-for(let i=0;i<12;i++){const p=document.createElement('div');p.className='fp';p.style.setProperty('--x',Math.random()*100+'%');p.style.setProperty('--s',1+Math.random()*2+'px');p.style.setProperty('--d',5+Math.random()*7+'s');p.style.animationDelay=-Math.random()*10+'s';p.style.background=`rgba(${themes[currentTheme].particle},0.4)`;fpWrap.appendChild(p)}
+for(let i=0;i<12;i++){const p=document.createElement('div');p.className='fp';p.style.setProperty('--x',Math.random()*100+'%');p.style.setProperty('--s',1+Math.random()*2+'px');p.style.setProperty('--d',5+Math.random()*7+'s');p.style.animationDelay=-Math.random()*10+'s';p.style.background=`rgba(${themes.blue.particle},0.4)`;fpWrap.appendChild(p)}
 
-// ========== MOUSE PARTICLES ON CARD ==========
+// ========== MOUSE PARTICLES ==========
 const mpc=document.getElementById('mouseP'),mpx=mpc.getContext('2d');let mparts=[];
 const cardEl=document.getElementById('card');
 function rsMP(){const r=mpc.parentElement.getBoundingClientRect();mpc.width=r.width;mpc.height=r.height}
@@ -345,56 +316,27 @@ function drawMP(){mpx.clearRect(0,0,mpc.width,mpc.height);mparts=mparts.filter(p
 
 // ========== 3D TILT ==========
 const card3d=document.getElementById('card3d'),shineEl=document.getElementById('shine');
-const bgImg=document.getElementById('cardBgImg');
 let tx=0,ty=0,ttx=0,tty=0;
-function uc(){tx+=(ttx-tx)*.06;ty+=(tty-ty)*.06;card3d.style.transform=`rotateY(${ty}deg) rotateX(${-tx}deg)`;if(bgImg.src)bgImg.style.transform=`scale(1.08) translate(${ty*.6}px,${-tx*.6}px)`;shineEl.style.setProperty('--sx',(50+ty*2.5)+'%');shineEl.style.setProperty('--sy',(50+tx*2.5)+'%');requestAnimationFrame(uc)}uc();
+function uc(){tx+=(ttx-tx)*.06;ty+=(tty-ty)*.06;card3d.style.transform=`rotateY(${ty}deg) rotateX(${-tx}deg)`;if(bgImg.src&&bgImg.complete)bgImg.style.transform=`scale(1.08) translate(${ty*.6}px,${-tx*.6}px)`;shineEl.style.setProperty('--sx',(50+ty*2.5)+'%');shineEl.style.setProperty('--sy',(50+tx*2.5)+'%');requestAnimationFrame(uc)}uc();
 document.addEventListener('mousemove',e=>{tty=((e.clientX-innerWidth/2)/(innerWidth/2))*10;ttx=((e.clientY-innerHeight/2)/(innerHeight/2))*10});
 document.addEventListener('mouseleave',()=>{ttx=0;tty=0});
 
 // Gyroscope
-if(window.DeviceOrientationEvent){const ho=e=>{if(e.gamma!=null&&e.beta!=null){tty=Math.max(-10,Math.min(10,e.gamma*.4));ttx=Math.max(-10,Math.min(10,(e.beta-40)*.25))}};if(typeof DeviceOrientationEvent.requestPermission==='function'){document.addEventListener('click',function gr(){DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted')addEventListener('deviceorientation',ho)}).catch(console.error);document.removeEventListener('click',gr)},{once:false})}else addEventListener('deviceorientation',ho)}
+if(window.DeviceOrientationEvent){const ho=e=>{if(e.gamma!=null&&e.beta!=null){tty=Math.max(-10,Math.min(10,e.gamma*.4));ttx=Math.max(-10,Math.min(10,(e.beta-40)*.25))}};if(typeof DeviceOrientationEvent.requestPermission==='function'){document.addEventListener('click',function gr(){DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted')addEventListener('deviceorientation',ho)}).catch(console.error);document.removeEventListener('click',gr)},{once:true})}else addEventListener('deviceorientation',ho)}
 
-// ========== GLITCH ==========
+// Glitch
 setInterval(()=>{if(Math.random()>.7){playGlitch();cardEl.style.filter=`brightness(${1+Math.random()*.2}) hue-rotate(${Math.random()*12-6}deg)`;setTimeout(()=>cardEl.style.filter='',60+Math.random()*80)}},3000);
-
-// ========== REACTIVE FORM ==========
-const inName=document.getElementById('inName'),inHandle=document.getElementById('inHandle'),inWallet=document.getElementById('inWallet'),inRole=document.getElementById('inRole'),inNumber=document.getElementById('inNumber');
-const cardName=document.getElementById('cardName'),cardHandle=document.getElementById('cardHandle'),cardWallet=document.getElementById('cardWallet'),cardRole=document.getElementById('cardRole'),cardId=document.getElementById('cardId'),cardStatus=document.getElementById('cardStatus');
-
-function update(){
-  cardName.textContent=inName.value||'YOUR NAME';
-  cardHandle.textContent=inHandle.value||'@handle';
-  cardWallet.textContent=inWallet.value||'0x...';
-  cardRole.textContent=inRole.value;
-  const n=String(inNumber.value||'1').padStart(4,'0');
-  cardId.innerHTML=`#${n}<br>GEN::01`;
-}
-[inName,inHandle,inWallet,inNumber].forEach(el=>{el.addEventListener('input',()=>{update();playKey()})});
-inRole.addEventListener('change',()=>{update();playKey()});
-
-// Color picker
-document.querySelectorAll('.color-opt').forEach(el=>{
-  el.addEventListener('click',()=>{
-    document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('active'));
-    el.classList.add('active');
-    applyTheme(el.dataset.color);
-    playKey();
-  });
-});
 
 // ========== IMAGE SELECTOR ==========
 const imgRow=document.getElementById('imgRow');
-
-// Images in /img/ folder — add as many as you want to the repo
 const artOptions=[
   {file:'img/remeko1.png',label:'ART 1'},
   {file:'img/remeko2.png',label:'ART 2'},
   {file:'img/remeko3.png',label:'ART 3'},
   {file:'img/remeko4.png',label:'ART 4'},
   {file:'img/remeko5.png',label:'ART 5'},
-  {file:'img/remeko6.png',label:'ART 6'},
+  {file:'img/remeko6.png',label:'ART 6'}
 ];
-
 let activeImgOpt=null;
 
 function selectBg(src,optEl){
@@ -404,103 +346,110 @@ function selectBg(src,optEl){
   playKey();
 }
 
-// Build thumbnails — only shows images that exist
+// Main image from root
+const mainOpt=document.createElement('div');
+mainOpt.className='img-opt';
+const mainOptImg=document.createElement('img');
+mainOptImg.src='./remeko.png';
+mainOptImg.onerror=()=>mainOpt.remove();
+mainOptImg.onload=()=>selectBg('./remeko.png',mainOpt);
+const mainOptLbl=document.createElement('div');
+mainOptLbl.className='img-label';mainOptLbl.textContent='MAIN';
+mainOpt.appendChild(mainOptImg);mainOpt.appendChild(mainOptLbl);
+mainOpt.addEventListener('click',()=>selectBg('./remeko.png',mainOpt));
+imgRow.appendChild(mainOpt);
+
+// Art options from /img/ folder
 artOptions.forEach(art=>{
-  const div=document.createElement('div');
-  div.className='img-opt';
-  const img=document.createElement('img');
-  img.src=art.file;
-  img.alt=art.label;
-  img.onerror=()=>div.remove(); // hide if file doesn't exist
-  const lbl=document.createElement('div');
-  lbl.className='img-label';
-  lbl.textContent=art.label;
-  div.appendChild(img);
-  div.appendChild(lbl);
+  const div=document.createElement('div');div.className='img-opt';
+  const img=document.createElement('img');img.src=art.file;img.alt=art.label;
+  img.onerror=()=>div.remove();
+  const lbl=document.createElement('div');lbl.className='img-label';lbl.textContent=art.label;
+  div.appendChild(img);div.appendChild(lbl);
   div.addEventListener('click',()=>selectBg(art.file,div));
   imgRow.appendChild(div);
 });
 
-// Also try loading remeko.png from root (backward compat)
-const legacyOpt=document.createElement('div');
-legacyOpt.className='img-opt';
-const legacyImg=document.createElement('img');
-legacyImg.src='./remeko.png';
-legacyImg.onerror=()=>legacyOpt.remove();
-legacyImg.onload=()=>{selectBg('./remeko.png',legacyOpt)};
-const legacyLbl=document.createElement('div');
-legacyLbl.className='img-label';
-legacyLbl.textContent='MAIN';
-legacyOpt.appendChild(legacyImg);
-legacyOpt.appendChild(legacyLbl);
-legacyOpt.addEventListener('click',()=>selectBg('./remeko.png',legacyOpt));
-imgRow.prepend(legacyOpt);
-
-// Custom URL input
+// Custom URL
 document.getElementById('customImgBtn').addEventListener('click',()=>{
   const url=document.getElementById('customImgUrl').value.trim();
-  if(url){if(activeImgOpt)activeImgOpt.classList.remove('active');activeImgOpt=null;selectBg(url,null)}
+  if(url){if(activeImgOpt)activeImgOpt.classList.remove('active');activeImgOpt=null;bgImg.src=url;playKey()}
 });
 document.getElementById('customImgUrl').addEventListener('keydown',e=>{
-  if(e.key==='Enter'){const url=e.target.value.trim();if(url){if(activeImgOpt)activeImgOpt.classList.remove('active');activeImgOpt=null;selectBg(url,null)}}
+  if(e.key==='Enter'){const url=e.target.value.trim();if(url){if(activeImgOpt)activeImgOpt.classList.remove('active');activeImgOpt=null;bgImg.src=url;playKey()}}
+});
+
+// ========== REACTIVE FORM ==========
+const inName=document.getElementById('inName'),inHandle=document.getElementById('inHandle'),inWallet=document.getElementById('inWallet'),inRole=document.getElementById('inRole'),inNumber=document.getElementById('inNumber');
+const cardName=document.getElementById('cardName'),cardHandle=document.getElementById('cardHandle'),cardWallet=document.getElementById('cardWallet'),cardRole=document.getElementById('cardRole'),cardId=document.getElementById('cardId');
+
+function update(){
+  cardName.textContent=inName.value||'YOUR NAME';
+  cardHandle.textContent=inHandle.value||'@handle';
+  cardWallet.textContent=inWallet.value||'0x...';
+  cardRole.textContent=inRole.value;
+  const n=String(inNumber.value||'1').padStart(4,'0');
+  cardId.innerHTML=`#${n}<br>GEN::01`;
+}
+[inName,inHandle,inWallet,inNumber].forEach(el=>el.addEventListener('input',()=>{update();playKey()}));
+inRole.addEventListener('change',()=>{update();playKey()});
+
+// Color picker
+document.querySelectorAll('.color-opt').forEach(el=>{
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('active'));
+    el.classList.add('active');applyTheme(el.dataset.color);playKey();
+  });
 });
 
 // ========== DOWNLOAD ==========
-document.getElementById('btnDownload').addEventListener('click',async()=>{
+document.getElementById('btnDownload').addEventListener('click',()=>{
   playDownload();
-  // Use html2canvas-like approach with canvas
   const exp=document.getElementById('exportCanvas');
-  const cw=720,ch=1040;
-  exp.width=cw;exp.height=ch;
+  const cw=720,ch=1040;exp.width=cw;exp.height=ch;
   const ctx=exp.getContext('2d');
-  
-  // Background
-  ctx.fillStyle='#080810';
-  ctx.fillRect(0,0,cw,ch);
-  
+
+  ctx.fillStyle='#080810';ctx.fillRect(0,0,cw,ch);
+
   // Accent bar
-  const th=themes[currentTheme];
-  const accentGrad=ctx.createLinearGradient(0,0,cw,0);
   const accentColors={blue:['#508cff','#a050ff'],purple:['#a050ff','#ff50a0'],cyan:['#40d8ff','#40ffa0'],red:['#ff4060','#ff8040'],green:['#40ff80','#40ffd0'],gold:['#ffc040','#ffdd80']};
-  accentGrad.addColorStop(0,accentColors[currentTheme][0]);
-  accentGrad.addColorStop(1,accentColors[currentTheme][1]);
-  ctx.fillStyle=accentGrad;
-  ctx.fillRect(0,0,cw,6);
-  
+  const acG=ctx.createLinearGradient(0,0,cw,0);
+  acG.addColorStop(0,accentColors[currentTheme][0]);acG.addColorStop(1,accentColors[currentTheme][1]);
+  ctx.fillStyle=acG;ctx.fillRect(0,0,cw,6);
+
   // BG image
   if(bgImg.complete&&bgImg.naturalWidth>0){
-    const imgR=bgImg.naturalWidth/bgImg.naturalHeight;
-    const cardR=cw/ch;
+    const imgR=bgImg.naturalWidth/bgImg.naturalHeight,cardR=cw/ch;
     let sw,sh,sx,sy;
     if(imgR>cardR){sh=bgImg.naturalHeight;sw=sh*cardR;sx=(bgImg.naturalWidth-sw)/2;sy=0}
     else{sw=bgImg.naturalWidth;sh=sw/cardR;sx=0;sy=(bgImg.naturalHeight-sh)/2}
     ctx.drawImage(bgImg,sx,sy,sw,sh,0,0,cw,ch);
   }
-  
-  // Overlay gradient
+
+  // Overlay
   const ovG=ctx.createLinearGradient(0,0,0,ch);
   ovG.addColorStop(0,'rgba(5,5,15,0.1)');ovG.addColorStop(0.5,'rgba(5,5,15,0.15)');ovG.addColorStop(0.75,'rgba(5,5,15,0.9)');ovG.addColorStop(1,'rgba(5,5,15,0.98)');
   ctx.fillStyle=ovG;ctx.fillRect(0,0,cw,ch);
-  
+
   // Vignette
-  const vigG=ctx.createRadialGradient(cw/2,ch/2,cw*0.3,cw/2,ch/2,cw*0.8);
-  vigG.addColorStop(0,'transparent');vigG.addColorStop(1,'rgba(0,0,0,0.4)');
-  ctx.fillStyle=vigG;ctx.fillRect(0,0,cw,ch);
-  
+  const vG=ctx.createRadialGradient(cw/2,ch/2,cw*.3,cw/2,ch/2,cw*.8);
+  vG.addColorStop(0,'transparent');vG.addColorStop(1,'rgba(0,0,0,0.4)');
+  ctx.fillStyle=vG;ctx.fillRect(0,0,cw,ch);
+
   // Brand
-  ctx.font='900 22px Orbitron';ctx.fillStyle='rgba(255,255,255,0.6)';ctx.textBaseline='top';
-  ctx.fillText('REMEKO',32,28);
-  ctx.font='14px "Share Tech Mono"';ctx.fillStyle='rgba(80,140,255,0.3)';
-  ctx.fillText('COMMUNITY PASS',32,54);
-  
+  ctx.textBaseline='top';ctx.textAlign='left';
+  ctx.font='900 22px Orbitron';ctx.fillStyle='rgba(255,255,255,0.6)';ctx.fillText('REMEKO',32,28);
+  ctx.font='14px "Share Tech Mono"';ctx.fillStyle='rgba(80,140,255,0.3)';ctx.fillText('COMMUNITY PASS',32,54);
+
   // ID
+  const th=themes[currentTheme];
   const n=String(inNumber.value||'1').padStart(4,'0');
-  ctx.font='14px "Share Tech Mono"';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='right';
-  ctx.fillText(`#${n}`,cw-32,30);ctx.fillText('GEN::01',cw-32,48);ctx.textAlign='left';
-  
+  ctx.textAlign='right';ctx.font='14px "Share Tech Mono"';ctx.fillStyle='rgba(255,255,255,0.2)';
+  ctx.fillText(`#${n}`,cw-32,30);ctx.fillText('GEN::01',cw-32,48);
+
   // Corners
-  ctx.strokeStyle=th.border;ctx.lineWidth=1.5;
-  [[20,20,'tl'],[cw-20,20,'tr'],[20,ch-20,'bl'],[cw-20,ch-20,'br']].forEach(([x,y,pos])=>{
+  ctx.strokeStyle=th.border;ctx.lineWidth=1.5;ctx.textAlign='left';
+  [[20,20,'tl'],[cw-20,20,'tr'],[20,ch-60,'bl'],[cw-20,ch-60,'br']].forEach(([x,y,pos])=>{
     ctx.beginPath();
     if(pos==='tl'){ctx.moveTo(x,y+18);ctx.lineTo(x,y);ctx.lineTo(x+18,y)}
     if(pos==='tr'){ctx.moveTo(x,y+18);ctx.lineTo(x,y);ctx.lineTo(x-18,y)}
@@ -508,51 +457,43 @@ document.getElementById('btnDownload').addEventListener('click',async()=>{
     if(pos==='br'){ctx.moveTo(x,y-18);ctx.lineTo(x,y);ctx.lineTo(x-18,y)}
     ctx.stroke();
   });
-  
+
   // Username
-  ctx.font='900 44px Orbitron';ctx.fillStyle='#fff';
-  ctx.shadowColor=th.glow;ctx.shadowBlur=20;
-  ctx.fillText(inName.value||'YOUR NAME',40,ch-180);
-  ctx.shadowBlur=0;
-  
+  ctx.font='900 44px Orbitron';ctx.fillStyle='#fff';ctx.shadowColor=th.glow;ctx.shadowBlur=20;
+  ctx.fillText(inName.value||'YOUR NAME',40,ch-200);ctx.shadowBlur=0;
+
   // Handle
   ctx.font='20px "Share Tech Mono"';ctx.fillStyle=th.text;
-  ctx.fillText(inHandle.value||'@handle',42,ch-140);
-  
+  ctx.fillText(inHandle.value||'@handle',42,ch-155);
+
   // Stats
   ctx.font='12px "Share Tech Mono"';ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.fillText('WALLET',42,ch-100);ctx.fillText('STATUS',202,ch-100);ctx.fillText('NETWORK',342,ch-100);
+  ctx.fillText('WALLET',42,ch-115);ctx.fillText('STATUS',202,ch-115);ctx.fillText('NETWORK',342,ch-115);
   ctx.font='18px "Share Tech Mono"';ctx.fillStyle=th.text;
-  ctx.fillText(inWallet.value||'0x...',42,ch-80);ctx.fillText('ACTIVE',202,ch-80);ctx.fillText('ETH',342,ch-80);
-  
+  ctx.fillText(inWallet.value||'0x...',42,ch-95);ctx.fillText('ACTIVE',202,ch-95);ctx.fillText('ETH',342,ch-95);
+
   // Role badge
-  ctx.font='14px "Share Tech Mono"';
-  const role=inRole.value;const rw=ctx.measureText(role).width+24;
-  ctx.strokeStyle=th.border;ctx.lineWidth=1;
-  ctx.strokeRect(42,ch-55,rw,28);
-  ctx.fillStyle=th.bg;ctx.fillRect(42,ch-55,rw,28);
-  ctx.fillStyle=th.text;ctx.fillText(role,54,ch-36);
-  
+  ctx.font='14px "Share Tech Mono"';const role=inRole.value;const rw=ctx.measureText(role).width+24;
+  ctx.strokeStyle=th.border;ctx.lineWidth=1;ctx.strokeRect(42,ch-70,rw,28);
+  ctx.fillStyle=th.bg;ctx.fillRect(42,ch-70,rw,28);
+  ctx.fillStyle=th.text;ctx.fillText(role,54,ch-51);
+
   // Scanlines
-  ctx.fillStyle='rgba(0,0,0,0.03)';
-  for(let y=0;y<ch;y+=4)ctx.fillRect(0,y,cw,2);
-  
-  // Credit - more visible
+  ctx.fillStyle='rgba(0,0,0,0.03)';for(let y=0;y<ch;y+=4)ctx.fillRect(0,y,cw,2);
+
+  // Credit
   ctx.textAlign='center';
   ctx.font='11px "Share Tech Mono"';ctx.fillStyle='rgba(80,140,255,0.2)';
   ctx.fillText('REMEKO COMMUNITY CARD',cw/2,ch-24);
   ctx.font='bold 13px "Share Tech Mono"';ctx.fillStyle='rgba(80,180,255,0.3)';
   ctx.fillText('Built by @dnh1_kwsk',cw/2,ch-8);
-  ctx.textAlign='left';
-  
+
   // Download
   const link=document.createElement('a');
-  link.download=`remeko_card_${n}.png`;
-  link.href=exp.toDataURL('image/png');
-  link.click();
+  link.download=`remeko_card_${n}.png`;link.href=exp.toDataURL('image/png');link.click();
 });
 
-// Init
+// ========== INIT ==========
 applyTheme('blue');
 update();
 </script>
