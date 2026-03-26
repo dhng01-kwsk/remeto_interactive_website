@@ -130,10 +130,14 @@ TILT YOUR PHONE
 <div class="container" id="card3d">
 <div class="card" id="card">
 
-<label class="drop-zone" id="dropZone" for="fileInput">
-<div class="drop-icon">⬆</div>
-<div class="drop-label"><b>Toque aqui para selecionar a imagem</b><br><br>Use a arte original do Remeko</div>
-</label>
+<div class="drop-zone" id="dropZone">
+<div class="drop-icon">🖼</div>
+<div class="drop-label"><b>Cole a URL da imagem abaixo</b><br><br>No site final, salve como remeko.png<br>na mesma pasta do index.html</div>
+<div style="margin-top:15px;display:flex;gap:6px;padding:0 20px;width:100%">
+<input type="text" id="urlInput" placeholder="https://...imagem.png" style="flex:1;background:rgba(80,140,255,0.06);border:1px solid rgba(80,140,255,0.2);border-radius:8px;padding:10px 12px;color:rgba(80,180,255,0.8);font-family:'Share Tech Mono',monospace;font-size:11px;outline:none">
+<button id="urlBtn" style="background:rgba(80,140,255,0.15);border:1px solid rgba(80,140,255,0.3);border-radius:8px;color:rgba(80,180,255,0.8);padding:10px 16px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap">LOAD</button>
+</div>
+</div>
 <input type="file" id="fileInput" accept="image/*" style="position:absolute;top:-9999px;left:-9999px;opacity:0">
 
 <div class="img-wrap"><img id="mainImg" src="" alt="REMEKO"></div>
@@ -268,10 +272,26 @@ setTimeout(bootNext,600);
 const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
 const mainImg=document.getElementById('mainImg'),gRI=document.querySelector('.glitch-r img'),gBI=document.querySelector('.glitch-b img');
 function loadImage(src){mainImg.src=src;gRI.src=src;gBI.src=src;dropZone.classList.add('hidden')}
+
+// URL input
+document.getElementById('urlBtn').addEventListener('click',()=>{
+  const url=document.getElementById('urlInput').value.trim();
+  if(url)loadImage(url);
+});
+document.getElementById('urlInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){const url=e.target.value.trim();if(url)loadImage(url)}
+});
+
+// Drag & drop (desktop)
 dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>loadImage(ev.target.result);r.readAsDataURL(f)}});
 fileInput.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>loadImage(ev.target.result);r.readAsDataURL(f)}});
+
+// Auto-load remeko.png if hosted
+const autoImg=new Image();
+autoImg.onload=()=>loadImage('./remeko.png');
+autoImg.src='./remeko.png';
 
 // ========== BG PARTICLES ==========
 const cv=document.getElementById('bg'),cx=cv.getContext('2d');let W,H;
