@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<div class="form-group">
+<label>Background Art</label>
+<div class="img-row" id="imgRow"></div>
+<details style="margin-top:8px">
+<summary style="font-size:8px;color:rgba(80,140,255,0.3);cursor:pointer;letter-spacing:2px">CUSTOM URL ▾</summary>
+<div style="margin-top:6px;display:flex;gap:6px">
+<input type="text" id="customImgUrl" placeholder="https://...image.png" style="flex:1;background:rgba(80,140,255,0.04);border:1px solid rgba(80,140,255,0.12);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;outline:none">
+<button id="customImgBtn" style="background:rgba(80,140,255,0.1);border:1px solid rgba(80,140,255,0.2);border-radius:6px;color:rgba(80,180,255,0.7);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer">OK</button>
+</div>
+</details>
+</div><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -272,7 +282,7 @@ canvas.mouseP{position:absolute;inset:0;z-index:9;pointer-events:none}
 </div>
 </div>
 
-<div class="credit">BUILT WITH CODE BY <a href="https://x.com/dnhg1_kwsk" target="_blank">@dnhg1_kwsk</a> // FOR THE REMEKO COMMUNITY</div>
+<div class="credit">BUILT WITH CODE BY <a href="https://x.com/dnh1_kwsk" target="_blank">@dnh1_kwsk</a> // FOR THE REMEKO COMMUNITY</div>
 
 <canvas id="exportCanvas"></canvas>
 
@@ -527,9 +537,13 @@ document.getElementById('btnDownload').addEventListener('click',async()=>{
   ctx.fillStyle='rgba(0,0,0,0.03)';
   for(let y=0;y<ch;y+=4)ctx.fillRect(0,y,cw,2);
   
-  // Credit watermark
-  ctx.font='12px "Share Tech Mono"';ctx.fillStyle='rgba(80,140,255,0.15)';ctx.textAlign='center';
-  ctx.fillText('remeko community card // @dnhg1_kwsk',cw/2,ch-10);ctx.textAlign='left';
+  // Credit - more visible
+  ctx.textAlign='center';
+  ctx.font='11px "Share Tech Mono"';ctx.fillStyle='rgba(80,140,255,0.2)';
+  ctx.fillText('REMEKO COMMUNITY CARD',cw/2,ch-24);
+  ctx.font='bold 13px "Share Tech Mono"';ctx.fillStyle='rgba(80,180,255,0.3)';
+  ctx.fillText('Built by @dnh1_kwsk',cw/2,ch-8);
+  ctx.textAlign='left';
   
   // Download
   const link=document.createElement('a');
