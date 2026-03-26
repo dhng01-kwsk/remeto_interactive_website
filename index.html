@@ -130,12 +130,11 @@ TILT YOUR PHONE
 <div class="container" id="card3d">
 <div class="card" id="card">
 
-<div class="drop-zone" id="dropZone">
+<label class="drop-zone" id="dropZone" for="fileInput">
 <div class="drop-icon">⬆</div>
 <div class="drop-label"><b>Toque aqui para selecionar a imagem</b><br><br>Use a arte original do Remeko</div>
-<label for="fileInput" style="position:absolute;inset:0;cursor:pointer;z-index:51"></label>
-<input type="file" id="fileInput" accept="image/*" style="position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;z-index:52;cursor:pointer">
-</div>
+</label>
+<input type="file" id="fileInput" accept="image/*" style="position:absolute;top:-9999px;left:-9999px;opacity:0">
 
 <div class="img-wrap"><img id="mainImg" src="" alt="REMEKO"></div>
 <div class="glitch-r" id="glitchR"><img src="" alt=""></div>
@@ -269,7 +268,6 @@ setTimeout(bootNext,600);
 const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
 const mainImg=document.getElementById('mainImg'),gRI=document.querySelector('.glitch-r img'),gBI=document.querySelector('.glitch-b img');
 function loadImage(src){mainImg.src=src;gRI.src=src;gBI.src=src;dropZone.classList.add('hidden')}
-dropZone.addEventListener('click',()=>fileInput.click());
 dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>loadImage(ev.target.result);r.readAsDataURL(f)}});
