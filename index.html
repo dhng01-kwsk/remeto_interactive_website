@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REMEKO // Interactive Tribute</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050508;overflow:hidden;width:100vw;height:100vh;font-family:'Share Tech Mono',monospace;cursor:crosshair;display:flex;align-items:center;justify-content:center}
+canvas#bg{position:fixed;top:0;left:0;z-index:0}
+
+/* === BOOT === */
+.boot{position:fixed;inset:0;z-index:100;background:#050508;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease-out}
+.boot.done{opacity:0;pointer-events:none}
+.boot-logo{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:rgba(80,140,255,0);letter-spacing:12px;margin-bottom:30px;transition:all 1s}
+.boot-logo.on{color:rgba(80,140,255,0.8);text-shadow:0 0 30px rgba(80,140,255,0.4),0 0 60px rgba(120,60,255,0.2)}
+.boot-text{color:rgba(80,140,255,0.5);font-size:11px;letter-spacing:3px;line-height:2.4;text-align:left;width:320px;overflow:hidden}
+.boot-text div{opacity:0;transform:translateX(-10px);transition:all 0.4s}
+.boot-text div.on{opacity:1;transform:translateX(0)}
+.boot-bar{width:260px;height:2px;background:rgba(80,140,255,0.08);margin-top:24px;border-radius:2px;overflow:hidden}
+.boot-fill{width:0;height:100%;background:linear-gradient(90deg,rgba(80,140,255,0.6),rgba(140,80,255,0.6));transition:width 0.4s ease-out}
+.boot-status{color:rgba(80,140,255,0.3);font-size:9px;letter-spacing:4px;margin-top:10px;opacity:0;transition:opacity 0.5s}
+.boot-status.on{opacity:1}
+
+/* === SCENE === */
+.scene{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;perspective:1200px;opacity:0;transform:scale(0.95);transition:opacity 1.2s ease-out,transform 1.2s ease-out}
+.scene.show{opacity:1;transform:scale(1)}
+.container{position:relative;width:400px;height:560px;transform-style:preserve-3d}
+.card{position:absolute;inset:0;border-radius:16px;background:#080810;overflow:hidden;box-shadow:0 0 80px rgba(80,100,255,0.08),0 0 160px rgba(100,40,200,0.04)}
+.card::before{content:'';position:absolute;inset:-2px;border-radius:18px;z-index:-1;background:conic-gradient(from var(--angle,0deg),rgba(80,140,255,0.4),rgba(140,60,255,0.3),rgba(80,200,255,0.3),rgba(140,60,255,0.3),rgba(80,140,255,0.4));animation:spin 6s linear infinite}
+@keyframes spin{to{--angle:360deg}}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+
+/* === IMAGE === */
+.img-wrap{position:absolute;inset:0;overflow:hidden;border-radius:16px;z-index:1}
+.img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform 0.1s ease-out}
+.glitch-r,.glitch-b{position:absolute;inset:0;overflow:hidden;border-radius:16px;pointer-events:none;z-index:2;opacity:0;transition:opacity 0.05s}
+.glitch-r img,.glitch-b img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.card.glitching .glitch-r{opacity:0.6}
+.card.glitching .glitch-b{opacity:0.6}
+
+/* === OVERLAYS === */
+.scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);z-index:10;pointer-events:none;border-radius:16px}
+.vignette{position:absolute;inset:0;border-radius:16px;box-shadow:inset 0 0 80px rgba(0,0,0,0.6),inset 0 0 150px rgba(0,0,0,0.3);z-index:10;pointer-events:none}
+.scan-line{position:absolute;width:100%;height:3px;background:linear-gradient(90deg,transparent,rgba(80,200,255,0.08),transparent);z-index:11;pointer-events:none;animation:scanDown 8s linear infinite;border-radius:16px}
+@keyframes scanDown{0%{top:-3px}100%{top:100%}}
+
+/* === MOUSE REACTIVE PARTICLES === */
+canvas#mouseParticles{position:absolute;inset:0;z-index:12;pointer-events:none;border-radius:16px}
+
+/* === HUD === */
+.hud{position:absolute;font-size:7px;color:rgba(80,140,255,0.35);z-index:15;pointer-events:none;letter-spacing:2px}
+.hud-tl{top:14px;left:14px}.hud-tr{top:14px;right:14px;text-align:right}
+.hud-bl{bottom:52px;left:14px}.hud-br{bottom:52px;right:14px;text-align:right}
+.corner{position:absolute;width:20px;height:20px;z-index:15;pointer-events:none}
+.corner::before,.corner::after{content:'';position:absolute;background:rgba(80,140,255,0.2)}
+.c-tl{top:10px;left:10px}.c-tl::before{width:20px;height:1px;top:0;left:0}.c-tl::after{width:1px;height:20px;top:0;left:0}
+.c-tr{top:10px;right:10px}.c-tr::before{width:20px;height:1px;top:0;right:0}.c-tr::after{width:1px;height:20px;top:0;right:0}
+.c-bl{bottom:48px;left:10px}.c-bl::before{width:20px;height:1px;bottom:0;left:0}.c-bl::after{width:1px;height:20px;bottom:0;left:0}
+.c-br{bottom:48px;right:10px}.c-br::before{width:20px;height:1px;bottom:0;right:0}.c-br::after{width:1px;height:20px;bottom:0;right:0}
+
+/* === TITLE === */
+.title-bar{position:absolute;bottom:0;left:0;width:100%;z-index:16;padding:10px 0;text-align:center;background:linear-gradient(transparent,rgba(5,5,10,0.95) 40%)}
+.title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:24px;color:#fff;letter-spacing:8px;text-shadow:0 0 20px rgba(80,140,255,0.5),0 0 40px rgba(120,60,255,0.3)}
+.subtitle{font-size:8px;color:rgba(80,140,255,0.4);letter-spacing:5px;margin-top:3px}
+
+/* === SHINE === */
+.shine{position:absolute;inset:0;z-index:14;pointer-events:none;border-radius:16px;overflow:hidden}
+.shine::before{content:'';position:absolute;width:150%;height:150%;top:-25%;left:-25%;background:radial-gradient(ellipse at var(--sx,50%) var(--sy,50%),rgba(255,255,255,0.08) 0%,transparent 55%)}
+
+/* === FLOATING PARTICLES === */
+.float-particles{position:absolute;inset:0;z-index:13;pointer-events:none;overflow:hidden;border-radius:16px}
+.fp{position:absolute;border-radius:50%;background:rgba(80,160,255,0.5);animation:fpA var(--d) ease-in-out infinite;left:var(--x);bottom:var(--b);width:var(--s);height:var(--s)}
+@keyframes fpA{0%,100%{transform:translateY(0);opacity:0}20%{opacity:0.7}80%{opacity:0.5}99%{transform:translateY(calc(-280px - var(--extra)));opacity:0}}
+
+/* === GLITCH BLOCKS === */
+.g-blocks{position:absolute;inset:0;z-index:11;pointer-events:none;border-radius:16px;overflow:hidden}
+.g-block{position:absolute;background:rgba(80,140,255,0.04);opacity:0}
+
+/* === DROP ZONE === */
+.drop-zone{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;border:2px dashed rgba(80,140,255,0.25);background:rgba(5,5,15,0.95);cursor:pointer;transition:all 0.3s}
+.drop-zone:hover,.drop-zone.drag{border-color:rgba(80,140,255,0.7);background:rgba(10,10,25,0.95)}
+.drop-zone.hidden{display:none}
+.drop-icon{font-size:36px;color:rgba(80,140,255,0.35);margin-bottom:12px}
+.drop-label{color:rgba(80,140,255,0.5);font-size:10px;letter-spacing:2px;text-align:center;line-height:2}
+.drop-label b{color:rgba(80,180,255,0.7)}
+input[type=file]{display:none}
+
+/* === TILT PHONE MSG === */
+.tilt-msg{display:none;position:fixed;bottom:60px;left:50%;transform:translateX(-50%);z-index:30;color:rgba(80,140,255,0.4);font-size:9px;letter-spacing:3px;animation:tiltPulse 2s ease-in-out infinite;text-align:center}
+@media(pointer:coarse){.tilt-msg{display:block}}
+@keyframes tiltPulse{0%,100%{opacity:0.3;transform:translateX(-50%) translateY(0)}50%{opacity:0.7;transform:translateX(-50%) translateY(-3px)}}
+.tilt-icon{font-size:18px;display:block;margin-bottom:5px;animation:tiltRock 2s ease-in-out infinite}
+@keyframes tiltRock{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+/* === EASTER EGG === */
+.easter-flash{position:absolute;inset:0;z-index:60;pointer-events:none;border-radius:16px;background:rgba(80,140,255,0);transition:background 0.1s}
+.easter-flash.pop{background:rgba(80,140,255,0.15)}
+@keyframes shakeCard{0%,100%{transform:rotateY(var(--ry)) rotateX(var(--rx))}25%{transform:rotateY(var(--ry)) rotateX(var(--rx)) translate(-3px,2px)}50%{transform:rotateY(var(--ry)) rotateX(var(--rx)) translate(3px,-2px)}75%{transform:rotateY(var(--ry)) rotateX(var(--rx)) translate(-2px,-1px)}}
+
+/* === CREDIT === */
+.credit{position:fixed;bottom:10px;width:100%;text-align:center;font-size:8px;color:rgba(80,140,255,0.2);z-index:20;letter-spacing:4px}
+.credit a{color:rgba(80,180,255,0.4);text-decoration:none;border-bottom:1px solid rgba(80,180,255,0.15);transition:color 0.3s}
+.credit a:hover{color:rgba(80,180,255,0.7)}
+
+@media(max-width:460px){.container{width:88vw;height:calc(88vw*1.4)}.title{font-size:18px;letter-spacing:5px}.boot-logo{font-size:26px}}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<!-- BOOT -->
+<div class="boot" id="boot">
+<div class="boot-logo" id="bootLogo">REMEKO</div>
+<div class="boot-text" id="bootText"></div>
+<div class="boot-bar"><div class="boot-fill" id="bootFill"></div></div>
+<div class="boot-status" id="bootStatus">PRESS ANYWHERE TO CONTINUE</div>
+</div>
+
+<!-- TILT MSG -->
+<div class="tilt-msg" id="tiltMsg">
+<span class="tilt-icon">📱</span>
+TILT YOUR PHONE
+</div>
+
+<!-- SCENE -->
+<div class="scene" id="scene">
+<div class="container" id="card3d">
+<div class="card" id="card">
+
+<div class="drop-zone" id="dropZone">
+<div class="drop-icon">⬆</div>
+<div class="drop-label"><b>Arraste a imagem aqui</b><br>ou clique para selecionar<br><br>Use a arte original do Remeko</div>
+<input type="file" id="fileInput" accept="image/*">
+</div>
+
+<div class="img-wrap"><img id="mainImg" src="" alt="REMEKO"></div>
+<div class="glitch-r" id="glitchR"><img src="" alt=""></div>
+<div class="glitch-b" id="glitchB"><img src="" alt=""></div>
+
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="scan-line"></div>
+<div class="shine" id="shine"></div>
+<canvas id="mouseParticles"></canvas>
+
+<div class="float-particles" id="floatP"></div>
+<div class="g-blocks" id="gBlocks"></div>
+<div class="easter-flash" id="eFlash"></div>
+
+<div class="corner c-tl"></div><div class="corner c-tr"></div>
+<div class="corner c-bl"></div><div class="corner c-br"></div>
+<div class="hud hud-tl">SYS://REMEKO<br>BUILD_2.1</div>
+<div class="hud hud-tr">◉ LIVE<br>NFT::GEN</div>
+<div class="hud hud-bl" id="coords">X:0.00 Y:0.00</div>
+<div class="hud hud-br" id="fpsHud">FPS:60<br>RENDER:OK</div>
+
+<div class="title-bar">
+<div class="title" id="titleEl">REMEKO</div>
+<div class="subtitle">WE HAVEN'T EVEN STARTED YET</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div class="credit">INTERACTIVE FAN ART TRIBUTE // BUILT WITH CODE BY <a href="https://x.com/dnh1_kwsk" target="_blank">@dnh1_kwsk</a></div>
+
+<script>
+// ========== AUDIO ENGINE (Web Audio API) ==========
+let audioCtx;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}
+
+function playHover(){
+  if(!audioCtx)return;
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(800+Math.random()*400,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(200,audioCtx.currentTime+0.15);
+  g.gain.setValueAtTime(0.03,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.15);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start();o.stop(audioCtx.currentTime+0.15);
+}
+
+function playGlitch(){
+  if(!audioCtx)return;
+  const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.08,audioCtx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.04;
+  const s=audioCtx.createBufferSource(),g=audioCtx.createGain();
+  s.buffer=buf;g.gain.setValueAtTime(0.06,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.08);
+  s.connect(g);g.connect(audioCtx.destination);s.start();
+}
+
+function playBoot(){
+  if(!audioCtx)return;
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type='sine';o.frequency.setValueAtTime(200,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(1200,audioCtx.currentTime+0.5);
+  o.frequency.exponentialRampToValueAtTime(600,audioCtx.currentTime+0.8);
+  g.gain.setValueAtTime(0.04,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.8);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.8);
+}
+
+function playEaster(){
+  if(!audioCtx)return;
+  [0,0.08,0.16,0.24].forEach((t,i)=>{
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type='sine';o.frequency.setValueAtTime([523,659,784,1047][i],audioCtx.currentTime+t);
+    g.gain.setValueAtTime(0.04,audioCtx.currentTime+t);
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+t+0.15);
+    o.connect(g);g.connect(audioCtx.destination);o.start(audioCtx.currentTime+t);o.stop(audioCtx.currentTime+t+0.15);
+  });
+}
+
+// ========== BOOT SEQUENCE ==========
+const bootLines=[
+  {t:'> INITIALIZING REMEKO_CORE',c:''},
+  {t:'  LOADING NEURAL MATRIX',c:'........OK'},
+  {t:'  SYNC BLOCKCHAIN NODE',c:'.........OK'},
+  {t:'  DECRYPT ART PIPELINE',c:'.........OK'},
+  {t:'  AUDIO ENGINE',c:'...............OK'},
+  {t:'  GYRO CALIBRATION',c:'...........OK'},
+  {t:'  PARTICLE SYSTEM',c:'............OK'},
+  {t:'  RENDER ENGINE',c:'..............READY'},
+  {t:'',c:''},
+  {t:'  ◉ ALL SYSTEMS ONLINE',c:''}
+];
+const bootText=document.getElementById('bootText'),bootFill=document.getElementById('bootFill');
+const bootEl=document.getElementById('boot'),sceneEl=document.getElementById('scene');
+const bootLogo=document.getElementById('bootLogo'),bootStatus=document.getElementById('bootStatus');
+let bi=0,bootDone=false;
+
+function bootNext(){
+  if(bi>=bootLines.length){
+    bootFill.style.width='100%';
+    bootStatus.classList.add('on');
+    // Wait for click/tap
+    const finish=()=>{
+      if(bootDone)return;bootDone=true;
+      initAudio();playBoot();
+      bootEl.classList.add('done');
+      setTimeout(()=>sceneEl.classList.add('show'),300);
+      document.removeEventListener('click',finish);
+      document.removeEventListener('touchstart',finish);
+    };
+    document.addEventListener('click',finish);
+    document.addEventListener('touchstart',finish);
+    return;
+  }
+  const d=document.createElement('div');
+  const line=bootLines[bi];
+  d.innerHTML=line.t+(line.c?`<span style="color:rgba(80,255,140,0.5)">${line.c}</span>`:'');
+  bootText.appendChild(d);
+  requestAnimationFrame(()=>d.classList.add('on'));
+  bootFill.style.width=((bi+1)/bootLines.length*95)+'%';
+  if(bi===0)setTimeout(()=>bootLogo.classList.add('on'),100);
+  bi++;
+  setTimeout(bootNext,180+Math.random()*150);
+}
+setTimeout(bootNext,600);
+
+// ========== IMAGE LOADING ==========
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
+const mainImg=document.getElementById('mainImg'),gRI=document.querySelector('.glitch-r img'),gBI=document.querySelector('.glitch-b img');
+function loadImage(src){mainImg.src=src;gRI.src=src;gBI.src=src;dropZone.classList.add('hidden')}
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>loadImage(ev.target.result);r.readAsDataURL(f)}});
+fileInput.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>loadImage(ev.target.result);r.readAsDataURL(f)}});
+
+// ========== BG PARTICLES ==========
+const cv=document.getElementById('bg'),cx=cv.getContext('2d');let W,H;
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
+const pts=Array.from({length:55},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.2+.3,a:Math.random()*.3+.05}));
+function db(){cx.fillStyle='rgba(5,5,8,0.12)';cx.fillRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fillStyle=`rgba(80,130,255,${p.a})`;cx.fill()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(80,130,255,${.05*(1-d/110)})`;cx.stroke()}}requestAnimationFrame(db)}db();
+
+// ========== MOUSE REACTIVE PARTICLES (inside card) ==========
+const mpc=document.getElementById('mouseParticles'),mpx=mpc.getContext('2d');
+let mparts=[];
+function rsMP(){const r=mpc.parentElement.getBoundingClientRect();mpc.width=r.width;mpc.height=r.height}
+rsMP();addEventListener('resize',rsMP);
+
+const cardEl=document.getElementById('card');
+let cardMouse={x:-1,y:-1};
+cardEl.addEventListener('mousemove',e=>{
+  const r=cardEl.getBoundingClientRect();
+  cardMouse.x=e.clientX-r.left;cardMouse.y=e.clientY-r.top;
+  // Spawn particles
+  for(let i=0;i<3;i++){
+    mparts.push({
+      x:cardMouse.x+(Math.random()-0.5)*10,
+      y:cardMouse.y+(Math.random()-0.5)*10,
+      vx:(Math.random()-0.5)*1.5,
+      vy:(Math.random()-0.5)*1.5-0.8,
+      life:1,decay:0.015+Math.random()*0.015,
+      r:1+Math.random()*2,
+      color:Math.random()>0.5?'80,160,255':'160,80,255'
+    });
+  }
+  playHover();
+});
+cardEl.addEventListener('mouseleave',()=>{cardMouse.x=-1;cardMouse.y=-1});
+
+function drawMP(){
+  mpx.clearRect(0,0,mpc.width,mpc.height);
+  mparts=mparts.filter(p=>p.life>0);
+  mparts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;p.vy-=0.02;
+    mpx.beginPath();
+    mpx.arc(p.x,p.y,Math.max(0.01,p.r*p.life),0,Math.PI*2);
+    mpx.fillStyle=`rgba(${p.color},${p.life*0.7})`;
+    mpx.fill();
+  });
+  // Glow around mouse
+  if(cardMouse.x>0){
+    const grd=mpx.createRadialGradient(cardMouse.x,cardMouse.y,0,cardMouse.x,cardMouse.y,60);
+    grd.addColorStop(0,'rgba(80,140,255,0.04)');
+    grd.addColorStop(1,'transparent');
+    mpx.fillStyle=grd;
+    mpx.fillRect(cardMouse.x-60,cardMouse.y-60,120,120);
+  }
+  requestAnimationFrame(drawMP);
+}drawMP();
+
+// ========== FLOAT PARTICLES ==========
+const fp=document.getElementById('floatP');
+for(let i=0;i<15;i++){const p=document.createElement('div');p.className='fp';p.style.setProperty('--x',Math.random()*100+'%');p.style.setProperty('--b',-20+Math.random()*20+'px');p.style.setProperty('--s',1+Math.random()*2.5+'px');p.style.setProperty('--d',4+Math.random()*6+'s');p.style.setProperty('--extra',Math.random()*100+'px');p.style.animationDelay=-Math.random()*8+'s';fp.appendChild(p)}
+
+// ========== GLITCH BLOCKS ==========
+const gb=document.getElementById('gBlocks');
+for(let i=0;i<8;i++){const b=document.createElement('div');b.className='g-block';b.style.width=30+Math.random()*80+'px';b.style.height=2+Math.random()*6+'px';b.style.top=Math.random()*100+'%';b.style.left=Math.random()*100+'%';gb.appendChild(b)}
+
+// ========== 3D TILT ==========
+const card3d=document.getElementById('card3d'),shineEl=document.getElementById('shine');
+const coordsEl=document.getElementById('coords'),fpsHud=document.getElementById('fpsHud');
+let tx=0,ty=0,ttx=0,tty=0;
+let lastTime=performance.now(),frames=0,fps=60;
+
+function uc(){
+  tx+=(ttx-tx)*.06;ty+=(tty-ty)*.06;
+  card3d.style.transform=`rotateY(${ty}deg) rotateX(${-tx}deg)`;
+  mainImg.style.transform=`scale(1.06) translate(${ty*0.6}px,${-tx*0.6}px)`;
+  shineEl.style.setProperty('--sx',(50+ty*2.5)+'%');
+  shineEl.style.setProperty('--sy',(50+tx*2.5)+'%');
+  coordsEl.textContent=`X:${ty.toFixed(2)} Y:${tx.toFixed(2)}`;
+  // FPS counter
+  frames++;
+  const now=performance.now();
+  if(now-lastTime>=1000){fps=frames;frames=0;lastTime=now;fpsHud.innerHTML=`FPS:${fps}<br>RENDER:OK`}
+  requestAnimationFrame(uc);
+}uc();
+
+document.addEventListener('mousemove',e=>{
+  tty=((e.clientX-innerWidth/2)/(innerWidth/2))*12;
+  ttx=((e.clientY-innerHeight/2)/(innerHeight/2))*12;
+});
+document.addEventListener('mouseleave',()=>{ttx=0;tty=0});
+
+// ========== GYROSCOPE ==========
+if(window.DeviceOrientationEvent){
+  const ho=e=>{if(e.gamma!=null&&e.beta!=null){tty=Math.max(-12,Math.min(12,e.gamma*.5));ttx=Math.max(-12,Math.min(12,(e.beta-40)*.3))}};
+  if(typeof DeviceOrientationEvent.requestPermission==='function'){
+    document.addEventListener('click',function gyroReq(){
+      DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted'){addEventListener('deviceorientation',ho);document.getElementById('tiltMsg').style.display='block'}}).catch(console.error);
+      document.removeEventListener('click',gyroReq);
+    });
+  }else{addEventListener('deviceorientation',ho)}
+}
+
+// ========== GLITCH EFFECTS ==========
+function rgbGlitch(){
+  if(Math.random()>.6){
+    playGlitch();
+    const dx1=(Math.random()-0.5)*8,dy1=(Math.random()-0.5)*4;
+    const dx2=(Math.random()-0.5)*8,dy2=(Math.random()-0.5)*4;
+    const rE=document.getElementById('glitchR'),bE=document.getElementById('glitchB');
+    rE.style.transform=`translate(${dx1}px,${dy1}px)`;
+    rE.querySelector('img').style.cssText=`width:100%;height:100%;object-fit:cover;object-position:center top;filter:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='r'><feColorMatrix values='1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/></filter></svg>#r")`;
+    bE.style.transform=`translate(${dx2}px,${dy2}px)`;
+    bE.querySelector('img').style.cssText=`width:100%;height:100%;object-fit:cover;object-position:center top;filter:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='b'><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0'/></filter></svg>#b")`;
+    cardEl.classList.add('glitching');
+    const y=Math.random()*100,h=2+Math.random()*8;
+    mainImg.style.clipPath=`inset(${y}% 0 ${100-y-h}% 0)`;
+    setTimeout(()=>{
+      cardEl.classList.remove('glitching');
+      rE.style.transform='';bE.style.transform='';
+      mainImg.style.clipPath='none';
+    },60+Math.random()*100);
+  }
+}
+setInterval(rgbGlitch,2200);
+
+setInterval(()=>{document.querySelectorAll('.g-block').forEach(b=>{if(Math.random()>.5){b.style.opacity=0.3+Math.random()*0.5;b.style.background=Math.random()>.5?'rgba(80,140,255,0.06)':'rgba(150,50,220,0.06)';setTimeout(()=>b.style.opacity=0,100+Math.random()*150)}})},1500);
+
+setInterval(()=>{if(Math.random()>.75){cardEl.style.filter=`brightness(${1+Math.random()*.2}) hue-rotate(${Math.random()*15-7}deg)`;setTimeout(()=>cardEl.style.filter='',50+Math.random()*80)}},3000);
+
+// Title glitch
+const titleEl=document.getElementById('titleEl');
+setInterval(()=>{
+  if(Math.random()>.8){
+    const chars='REMEKO'.split('');
+    const gi=Math.floor(Math.random()*chars.length);
+    const glitchChars='!@#$%&*?░▒▓█';
+    chars[gi]=glitchChars[Math.floor(Math.random()*glitchChars.length)];
+    titleEl.textContent=chars.join('');
+    titleEl.style.textShadow='-2px 0 #ff0040,2px 0 #00ffff';
+    setTimeout(()=>{titleEl.textContent='REMEKO';titleEl.style.textShadow=''},100);
+  }
+},2500);
+
+// ========== EASTER EGG: Double-click card ==========
+const eFlash=document.getElementById('eFlash');
+let easterActive=false;
+cardEl.addEventListener('dblclick',()=>{
+  if(easterActive)return;easterActive=true;
+  playEaster();
+  // Intense glitch burst
+  eFlash.classList.add('pop');
+  cardEl.style.filter='hue-rotate(180deg) brightness(1.5) saturate(2)';
+  card3d.style.animation='shakeCard 0.3s ease';
+  
+  // Rapid RGB splits
+  let count=0;
+  const burst=setInterval(()=>{
+    const rE=document.getElementById('glitchR'),bE=document.getElementById('glitchB');
+    rE.style.transform=`translate(${(Math.random()-0.5)*20}px,${(Math.random()-0.5)*10}px)`;
+    bE.style.transform=`translate(${(Math.random()-0.5)*20}px,${(Math.random()-0.5)*10}px)`;
+    cardEl.classList.add('glitching');
+    mainImg.style.clipPath=`inset(${Math.random()*80}% 0 ${Math.random()*20}% 0)`;
+    count++;
+    if(count>12){
+      clearInterval(burst);
+      cardEl.classList.remove('glitching');
+      rE.style.transform='';bE.style.transform='';
+      mainImg.style.clipPath='none';
+      cardEl.style.filter='';
+      card3d.style.animation='';
+      eFlash.classList.remove('pop');
+      easterActive=false;
+    }
+  },50);
+  
+  setTimeout(()=>eFlash.classList.remove('pop'),200);
+});
+</script>
+</body>
+</html>
